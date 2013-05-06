@@ -8,9 +8,9 @@
 <form name = "input" action="checklogin.php" method = "post">
 <input type = "radio" name = "usertype" value = "student">Student<br>
 <input type = "radio" name = "usertype" value = "professor">Professor<br>
-Username: <input type="text" name = "netid"><br>
-Password: <input type="password" name = "password"><br>
-<input type = "submit" value="submit">
+Username: <input type="text" name = "netid" maxlength="8"><br>
+Password: <input type="password" name = "password" maxlength="20"><br>
+<input type = "submit" value="Log In">
 </form>
 Create an account if you do not have one<br>
 <form method="post" action="/studCreateAccount.php">

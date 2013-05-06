@@ -52,7 +52,7 @@ CREATE TABLE SectionsTaught(
 	courseID INTEGER(3),
 	numRegistered INTEGER(3),
 	netid CHAR(8),
-	PRIMARY KEY(sectionNumber),
+	PRIMARY KEY(sectionNumber,courseID),
 	FOREIGN KEY(courseID) REFERENCES Course(courseID)
 	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY(netid) REFERENCES Professor(netid)

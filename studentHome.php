@@ -1,8 +1,6 @@
 <html>
 <title>Student Home</title>
 
-
-
 <?php
 
 $host="localhost:8889"; // Host name
@@ -25,6 +23,7 @@ $numcredits = $_SESSION['numCredits'];
 $gradmonth = $_SESSION['gradmonth'];
 $gradyear = $_SESSION['gradyear'];
 
+
 echo "<h3>Student Home Page</h3><h4>Welcome back $fname $lname!</h4>
 <table>
 <tr><td><u>Major:</u></td><td>$major</td></tr>
@@ -33,7 +32,7 @@ echo "<h3>Student Home Page</h3><h4>Welcome back $fname $lname!</h4>
 <tr><td><u>Graduation Date:</u></td><td>$gradmonth/$gradyear</td></tr>
 </table>";
 
-echo "<br><br><b><u>Add courses taken</u></b><br>";
+echo "<br><br><b><u>Add Courses Taken</u></b><br>";
 $sql = "SELECT courseID, courseName FROM Course"; 
 $query = mysql_query($sql); 
 if (!$query) {
@@ -47,21 +46,61 @@ exit('The query failed.');
 
 <?php
 while ($courses = mysql_fetch_array($query)) {
-	$courseid = $courses['courseid'];
+	$courseid = $courses['courseID'];
 	$coursename = $courses['courseName'];
-	echo "<option value='$courseid'>" . $courses['courseName'] ."</option>";
+	echo "<option value='$courseid'>" . $courses['courseName'] . "</option>";
 } 
 echo "</select>";
 ?>
+
+
 <br>Grade Earned: <br>
-<input type = "radio" name = "grade" value = "A">A<br>
-<input type = "radio" name = "grade" value = "B">B<br>
-<input type = "radio" name = "grade" value = "C">C<br>
-<input type = "radio" name = "grade" value = "D">D<br>
-<input type = "radio" name = "grade" value = "F">F<br>
-<input type = "submit" value = "submit">
+<select name = "grade">
+<option value = "A">A</option>
+<option value = "B">B</option>
+<option value = "C">C</option>
+<option value = "D">D</option>
+<option value = "F">F</option>
+</select>
+<br><input type = "submit" value = "Add Course">
 </form>
 
-</html>
 
 
+<?php
+echo "<b><u>Courses Taken<br></b></u>";
+$sql = "SELECT schoolNum, majorNum, courseNumber, courseName FROM Course where courseID in 
+(SELECT courseID FROM hasTaken WHERE netid = '$username')";
+$query = mysql_query($sql);
+while ($courses = mysql_fetch_array($query)) {
+	$schoolnum = $courses['schoolNum'];
+	$majornum = $courses['majorNum'];
+	$coursenum = $courses['courseNumber'];
+	$coursename = $courses['courseName'];
+	echo "0$schoolnum:$majornum:$coursenum - $coursename<br>";
+}
+
+echo "<br><b><u>Select Course to Special Permission Into</u></b><br>";
+$sql = "SELECT schoolNum, majorNum, courseNumber, courseName, courseID FROM Course where courseID in 
+(SELECT courseID FROM SectionsTaught GROUP BY (courseID))";
+$query = mysql_query($sql);
+if (!$query) {
+exit('The query failed.5'); 
+} 
+?>
+<form action="insertSectionRequesting.php" method="post">
+<select name='coursereq'>";
+<?php
+while ($courses = mysql_fetch_array($query)) {
+	$schoolnum = $courses['schoolNum'];
+	$majornum = $courses['majorNum'];
+	$coursenum = $courses['courseNumber'];
+	$coursename = $courses['courseName'];
+	$courseid = $courses['courseID'];
+	echo "<option value='$courseid'>" . $courses['courseName'] . "</option>";
+}
+echo "</select>";
+?>
+<br><input type = "submit" value = "Request Course">
+</form>	
+	
