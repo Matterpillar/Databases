@@ -1,3 +1,14 @@
+<?php
+session_start();
+//if someone just logged out, destroy their session.
+if (isset($_SESSION['loggedin'])) {
+	session_destroy();
+	echo "Session destroyed: " . $_SESSION['netid'];
+}
+
+?>
+
+
 <html>
 <title>Special Permission Number Request System</title>
 <body>
@@ -6,7 +17,7 @@
 <p>Students and professors should use this webpage to manage their courses</p>
 
 <form name = "input" action="checklogin.php" method = "post">
-<input type = "radio" name = "usertype" value = "student">Student<br>
+<input type = "radio" name = "usertype" value = "student" checked = "checked">Student<br>
 <input type = "radio" name = "usertype" value = "professor">Professor<br>
 Username: <input type="text" name = "netid" maxlength="8"><br>
 Password: <input type="password" name = "password" maxlength="20"><br>

@@ -1,8 +1,8 @@
 <?php
 
-$host="localhost:8889"; // Host name
-$username="root"; // Mysql username
-$password="root"; // Mysql password
+$host="localhost:3306"; // Host name
+$username="maraneta"; // Mysql username
+$password="password"; // Mysql password
 $db_name="test"; // Database name
 $tbl_name="Professor"; // Table name
 
@@ -25,7 +25,7 @@ VALUES
 
 
 
-$redirectionTime = 5;
+$redirectionTime = 3;
 $newPageUrl = "index.php";
 header( "Refresh: $redirectionTime; url=$newPageUrl" );
 echo "Account added. You will now be redirected to the home page, after $redirectionTime seconds.";

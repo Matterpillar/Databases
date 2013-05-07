@@ -37,6 +37,7 @@ CREATE TABLE Course(
 	courseNumber INTEGER(3) NOT NULL,
 	numCredits INTEGER(1),
 	maxCapacity INTEGER(3) NOT NULL,
+	spotsLeft INTEGER(3) NOT NULL,
 	PRIMARY KEY(courseID));  
 
 /* Preloaded table */
@@ -65,6 +66,7 @@ CREATE TABLE SpecialPermissionNumber(
 	courseID INTEGER(3),
 	sectionNumber INTEGER(3),
 	netid CHAR(8),
+	status INTEGER(1), /* 0 means taken, 1 means free */
 	PRIMARY KEY(SPNum),
 	FOREIGN KEY(courseID) REFERENCES Course(courseID)
 	ON UPDATE CASCADE ON DELETE SET NULL,
@@ -101,9 +103,9 @@ CREATE TABLE requestsSPNum(
 	netid CHAR(8) NOT NULL,
 	courseID INTEGER(3) NOT NULL,
 	sectionNumber INTEGER(3) NOT NULL,
-	dateReq CHAR(10),
-	timeReq CHAR(10),
+	timeReq CHAR(20) NOT NULL,
 	comments CHAR(100),
+	status CHAR(1), /*0 for declined, 1 for pending, 2 for approved */
 	FOREIGN KEY(netid) REFERENCES Student(netid)
 	ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY(courseID) REFERENCES Course(courseID)

@@ -3,9 +3,9 @@
 
 <?php
 
-$host="localhost:8889"; // Host name
-$username="root"; // Mysql username
-$password="root"; // Mysql password
+$host="localhost:3306"; // Host name
+$username="maraneta"; // Mysql username
+$password="password"; // Mysql password
 $db_name="test"; // Database name
 $tbl_name="Student"; // Table name
 
@@ -40,11 +40,12 @@ while ($courses = mysql_fetch_array($query)) {
 echo "</select>";
 ?>
 <br>Section Number: <input type="int" name = "secnum" maxlength ="3">
-<br>Number Registered: <input type="int" name = "regnum" maxlength ="3"><br>
+<br>Number Registered: <input type="int" name = "regnum" maxlength ="3">
+<br>Maximum Room Capacity: <input type="int" name = "cap" maxlength = "3"><br>
 <input type = "submit" value = "Add Course">
 </form>
 
-</html>
+
 
 <?php
 
@@ -71,16 +72,11 @@ while ($courses = mysql_fetch_array($query)) {
 		echo "0$schoolnum:$majornum:$coursenum:$sectionNumber - $coursename<br>";
 	
 	}
-	
-		
 }
 
-	
-
-
-
-
-
-
-
 ?>
+
+<form action="index.php" method="post">
+<input type = "submit" value = "Logout">
+
+</html>

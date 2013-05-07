@@ -3,9 +3,9 @@
 
 <?php
 
-$host="localhost:8889"; // Host name
-$username="root"; // Mysql username
-$password="root"; // Mysql password
+$host="localhost:3306"; // Host name
+$username="maraneta"; // Mysql username
+$password="password"; // Mysql password
 $db_name="test"; // Database name
 $tbl_name="Student"; // Table name
 
@@ -81,6 +81,7 @@ while ($courses = mysql_fetch_array($query)) {
 }
 
 echo "<br><b><u>Select Course to Special Permission Into</u></b><br>";
+echo "Only courses which have sections registered by a Professor in this system right now will be displayed<br>";
 $sql = "SELECT schoolNum, majorNum, courseNumber, courseName, courseID FROM Course where courseID in 
 (SELECT courseID FROM SectionsTaught GROUP BY (courseID))";
 $query = mysql_query($sql);
@@ -103,4 +104,9 @@ echo "</select>";
 ?>
 <br><input type = "submit" value = "Request Course">
 </form>	
+
+<form action="index.php" method="post">
+<input type = "submit" value = "Logout">
+
+</html>
 	

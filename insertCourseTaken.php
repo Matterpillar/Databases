@@ -1,8 +1,8 @@
 <?php
 
-$host="localhost:8889"; // Host name
-$username="root"; // Mysql username
-$password="root"; // Mysql password
+$host="localhost:3306"; // Host name
+$username="maraneta"; // Mysql username
+$password="password"; // Mysql password
 $db_name="test"; // Database name
 
 // Connect to server and select databse.
@@ -121,10 +121,12 @@ echo "You have not received at least a C in this course. It does not qualify for
 }
 }
 
+$redirectionTime = 4;
+$newPageUrl = "studentHome.php";
+header( "Refresh: $redirectionTime; url=$newPageUrl" );
+echo "<br><br>You'll be redirected to the Student page in $redirectionTime seconds.";
 
-
-
-
+?>
 
 	
 

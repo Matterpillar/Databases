@@ -1,8 +1,8 @@
 <?php
 
-$host="localhost:8889"; // Host name
-$username="root"; // Mysql username
-$password="root"; // Mysql password
+$host="localhost:3306"; // Host name
+$username="maraneta"; // Mysql username
+$password="password"; // Mysql password
 $db_name="test"; // Database name
 $tbl_name="Student"; // Table name
 
@@ -48,6 +48,7 @@ if ($count == 1)
   	   $gradyear = $row['graduationYear'];
 	}
 	session_start();
+	$_SESSION['loggedin'] = TRUE;
 	$_SESSION['netid'] = $netid;
 	$_SESSION['firstname'] = $firstname;
 	$_SESSION['lastname'] = $lastname;
