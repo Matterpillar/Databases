@@ -30,6 +30,18 @@ if (!$query) {
 exit('The query failed.'); 
 } 
 
+// Mysql_num_row is counting table row
+$count=mysql_num_rows($query);
+
+if ($count != 1 || $myusername=='')
+ {
+	$redirectionTime = 3;
+	$newPageUrl = "index.php";
+	header( "Refresh: $redirectionTime; url=$newPageUrl" );
+	echo "Incorrect Username! You will now be redirected to the home page, after $redirectionTime seconds.";
+ }
+ else {
+ 
 // Set username session variable
 while ($row = mysql_fetch_array($query)){ 
    $netid = $row['netid'];
@@ -44,20 +56,8 @@ while ($row = mysql_fetch_array($query)){
 	$_SESSION['password'] = $password;
 	$_SESSION['securityQuestion'] = $securityQuestion;
 	$_SESSION['securityAnswer'] = $securityAnswer;
-
-
-
-// Mysql_num_row is counting table row
-$count=mysql_num_rows($query);
-
-if ($count != 1 || $myusername=='')
- {
-	$redirectionTime = 3;
-	$newPageUrl = "index.php";
-	header( "Refresh: $redirectionTime; url=$newPageUrl" );
-	echo "Incorrect Username! You will now be redirected to the home page, after $redirectionTime seconds.";
- }
- else {
+ 
+ 
 
 	$redirectionTime = 1;
 	$newPageUrl = "inputSecurityAnswer.php";
