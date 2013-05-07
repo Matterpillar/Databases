@@ -3,7 +3,11 @@ session_start();
 //if someone just logged out, destroy their session.
 if (isset($_SESSION['loggedin'])) {
 	session_destroy();
-	echo "Session destroyed: " . $_SESSION['netid'];
+	//echo "Session destroyed: " . $_SESSION['netid'];
+}
+if (isset($_SESSION['findPassword'])) {
+	session_destroy();
+	//echo "Session destroyed: " . $_SESSION['netid'];
 }
 
 ?>
@@ -23,6 +27,11 @@ Username: <input type="text" name = "netid" maxlength="8"><br>
 Password: <input type="password" name = "password" maxlength="20"><br>
 <input type = "submit" value="Log In">
 </form>
+
+<form method="post" action="/forgotPassword.php">
+    <button type="submit">Forgot Password</button>
+</form>
+
 Create an account if you do not have one<br>
 <form method="post" action="/studCreateAccount.php">
     <button type="submit">Student Create Account</button>
