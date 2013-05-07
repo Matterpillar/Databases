@@ -1,5 +1,12 @@
 <?php
 
+$one = "cool";
+$two = "awesome";
+echo "test table:<br>"; ?> <table border=1"> <?php
+echo "<tr><td>$one</td><td>$two</td></tr>";
+?> </table> <?php
+
+
 $host="localhost:3306"; // Host name
 $username="maraneta"; // Mysql username
 $password="password"; // Mysql password
@@ -10,7 +17,7 @@ mysql_connect("$host", "$username", "$password")or die("cannot connect");
 mysql_select_db("$db_name")or die("cannot select DB");
 
 session_start();
-$username = $_SESSION['netid'];
+$netID = $_SESSION['netid'];
 $fname = $_SESSION['firstname'];
 $lname = $_SESSION['lastname'];
 
@@ -18,21 +25,21 @@ $lname = $_SESSION['lastname'];
 $secnum = $_POST['secnum'];
 $regnum = $_POST['regnum'];
 $courseid = $_POST['coursetaught'];
-$cap = $_POST['cap'];
+$seccap = $_POST['cap'];
 
 $temp = 0;
 
 $conditiontoaddsection = 1;
 
 //Ensure every field is filled out
-if(empty($secnum) or empty($regnum) or empty($cap)) {
-	echo "All fields must be filled out";
+if(empty($secnum) or empty($regnum) or empty($seccap)) {
+	echo "All fields must be filled out.<br>";
 	$conditiontoaddsection = 0;
 }
 
 //If the professor specifies a registered number of students bigger than the capacity, dont allow to add section
-if($regnum > $cap) {
-	echo "The registered number of students cannot exceed the maximum room capacity!";
+if($regnum > $seccap) {
+	echo "The registered number of students cannot exceed the maximum room capacity!<br>";
 	$conditiontoaddsection = 0;
 }
 
@@ -51,68 +58,64 @@ if($numrows > 0) {
 	$conditiontoaddsection=0;
 }
 
+if($regnum < 0) {
+	echo "Invalid input for number registered. Cant have negative number of students ($regnum)<br>";
+	$conditiontoaddsection=0;
+}
+
+if($seccap < 0) {
+	echo "Cannot have a negative maximum capacity.<br>";
+}
+
 //If not enough seats in class, dont allow to add section.
 if($conditiontoaddsection == 1) {
-$sql = "SELECT maxCapacity FROM Course WHERE courseID = '$courseid'";
-$query = mysql_query($sql);
-$courses = mysql_fetch_array($query);
-$temp = $courses['maxCapacity'];
-//echo "$temp"; debugging
+	$sql = "SELECT courseName, maxCapacity, spotsLeft FROM Course WHERE courseID = '$courseid'";
+	$query = mysql_query($sql);
+	$courses = mysql_fetch_array($query);
+	$courseName = $courses['courseName'];
+	$maxCapacity = $courses['maxCapacity'];
+	$spotsLeft = $courses['spotsLeft'];
 
-$sql1 = "SELECT numRegistered FROM SectionsTaught WHERE courseID = '$courseid'";
-$query1 = mysql_query($sql1);
-if (!$query1) {
-exit('The query failed.2'); 
-} 
+	$preRegister = $maxCapacity - $spotsLeft;
+	$postRegister = $spotsLeft - $regnum;
 
-while ($courses = mysql_fetch_array($query1)) {
-	$temp1 = $courses['numRegistered'];
-	$temp = $temp - $temp1;
+	if($spotsLeft == 0) {
+		echo "This course has reached its maximum capacity of $maxCapacity students.  Cannot add any more sections.<br>";
+	}
+	else if($postRegister < 0) {
+		echo "Cannot register " . $regnum . " more students to " . $courseName . "; there are currently " . $preRegister . "/";
+		echo $maxCapacity . " students registered.  <br>The course can only fit " . $spotsLeft . " more students.";
+	}
+	else{
+		//Now can actually add section
+
+		$sql = "INSERT INTO SectionsTaught VALUES ('$secnum','$courseid','$regnum','$netID','$seccap')";
+		$insert = mysql_query($sql);
+			//echo "secnum $secnum<br>courseid$courseid<br>regnum$regnum<br>user$username<br>";
+		if (!$insert) {
+			exit('The query failed.3'); 
+		} 
+		else {
+			echo "Section added! "; 
+			echo "old spotsleft: $spotsLeft<br>";
+			$spotsLeft = $spotsLeft - $regnum;
+			echo "new spotsLeft: $spotsLeft<br>";
+			echo "There are now $spotsLeft spots left in the course.";
+		
+			//update spotsLeft
+			$sql = "UPDATE Course SET spotsLeft = '$spotsLeft' WHERE courseID = '$courseid'";
+			$update = mysql_query($sql);
+			if (!$update) {
+				exit('The query failed.1'); 
+			}
+		} 
+	}	
 }
-if($regnum > $temp) {
-echo "Not enough room in class. Only $temp slots left";
-$spotsleft = $temp;
-$conditiontoaddsection = 0;
-}
-//echo "$temp"; debugging
-
-}
-
-//Now can actually add section
-if($conditiontoaddsection == 1 AND $regnum >= 0)
-{
-$sql = "INSERT INTO SectionsTaught VALUES ('$secnum','$courseid','$regnum','$username')";
-$query = mysql_query($sql);
-//echo "secnum $secnum<br>courseid$courseid<br>regnum$regnum<br>user$username<br>";
-if (!$query) {
-exit('The query failed.3'); 
-} 
-else {
-echo "Section added! "; 
-$spotsleft = $temp - $regnum;
-echo "There are $spotsleft spots left in the course.";
-}
-$sql = "UPDATE Course SET spotsLeft = '$spotsleft' WHERE courseID = '$courseid'";
-$query = mysql_query($sql);
-if (!$query) {
-exit('The query failed.1'); 
-} 
-}
-
-if($regnum < 0)
-{
-echo "Invalid input for number registered. Cant have negative number of students ($regnum)";
-}
-
-$redirectionTime = 4;
-$newPageUrl = "professorHome.php";
-header( "Refresh: $redirectionTime; url=$newPageUrl" );
-echo "<br><br> You will be redirected to the professor home page, after $redirectionTime seconds.";
-
-
-
-
-
-
 
 ?>
+
+<br><br>
+
+<form action="professorHome.php" method="post">
+<input type = "submit" value = "Return to Professor Home Page">
+

@@ -14,7 +14,7 @@ mysql_connect("$host", "$username", "$password")or die("cannot connect");
 mysql_select_db("$db_name")or die("cannot select DB");
 
 session_start();
-$username = $_SESSION['netid'];
+$netID = $_SESSION['netid'];
 $fname = $_SESSION['firstname'];
 $lname = $_SESSION['lastname'];
 
@@ -49,32 +49,101 @@ echo "</select>";
 
 <?php
 
+
+/*
 echo "<b><u>Current Sections Teaching</u></b><br>";
-$sql = "SELECT schoolNum, majorNum, courseNumber, courseName, courseID FROM Course where courseID in 
-(SELECT courseID FROM SectionsTaught WHERE netid = '$username' GROUP BY (courseID))";
+
+//Works, but does not sort the table by course name!
+$sql = "SELECT Course.schoolNum, Course.majorNum, Course.courseNumber, Course.maxCapacity, Course.spotsLeft, Course.courseName, 
+			Course.courseID, SectionsTaught.sectionNumber, SectionsTaught.numRegistered, SectionsTaught.sectionMax
+		FROM Course, SectionsTaught
+		WHERE netid = '$netID' AND Course.courseID = SectionsTaught.courseID
+		GROUP BY (courseID)";
 $query = mysql_query($sql);
-if (!$query) {
-exit('The query failed.5'); 
-} 
-while ($courses = mysql_fetch_array($query)) {
-	$schoolnum = $courses['schoolNum'];
-	$majornum = $courses['majorNum'];
-	$coursenum = $courses['courseNumber'];
-	$coursename = $courses['courseName'];
-	$courseid = $courses['courseID'];
-	$sql1 = "SELECT sectionNumber FROM SectionsTaught WHERE courseID = '$courseid'";
-	$query1 = mysql_query($sql1);
-	if (!$query1) {
-	exit('The query failed.'); 
-	} 
-	while ($courses1 = mysql_fetch_array($query1)) {
-		$sectionNumber = $courses1['sectionNumber'];
-		echo "0$schoolnum:$majornum:$coursenum:$sectionNumber - $coursename<br>";
-	
-	}
+
+if(!$query) {
+	exit('The query failed.blah');
 }
 
+//Create a table showing all sections being taught and section properties
 ?>
+<div style="text-align: center;">
+ <table border = "1"> <tr><th>Course Number</th><th>Section Number</th><th>Course Name</th><th>Students Registered in Section</th><th>Room Capacity</th><th>Students Registered in Course</th><th>Course Capacity</tr><?php
+
+while ($rows = mysql_fetch_array($query)) {
+	$schoolNum = $rows['schoolNum'];
+	$majorNum = $rows['majorNum'];
+	$courseNum = $rows['courseNumber'];
+	$maxCap = $rows['maxCapacity'];
+	$spotsLeft = $rows['spotsLeft'];
+	$courseName = $rows['courseName'];
+	$courseID = $rows['courseID'];
+	$sectionNum = $rows['sectionNumber'];
+	$numReg = $rows['numRegistered'];
+	$secMax = $rows['sectionMax'];
+	
+	$spotsFilled = $maxCap - $spotsLeft;
+	$fullNum = "0$schoolNum:$majorNum:$courseNum:$sectionNum";
+	
+	//create new row per section and fill it with section info
+
+	echo "<tr><td> $fullNum </td><td> $sectionNum </td><td> $courseName </td><td> $numReg </td><td> $secMax </td><td>
+			$spotsFilled </td><td> $maxCap </td></tr>";
+}
+
+*/
+
+//Create a table showing all sections being taught and section properties
+?>
+
+ <table border = "1"> <tr><th>Course Number</th><th>Section Number</th><th>Course Name</th><th>Students Registered in Section</th><th>Room Capacity</th><th>Students Registered in Course</th><th>Course Capacity</tr> 
+ 
+ <?php
+ 
+//Create the SQL query so that it groups the table by Course Name (courseID)
+ 
+$sql = "SELECT * FROM Course WHERE courseID IN 
+		(SELECT courseID FROM SectionsTaught WHERE netid = '$netID' GROUP BY (courseID))";
+$query = mysql_query($sql);
+if (!$query) {
+	exit('The query failed.5'); 
+} 
+while ($courses = mysql_fetch_array($query)) {
+
+	$schoolNum = $courses['schoolNum'];
+	$majorNum = $courses['majorNum'];
+	$courseNum = $courses['courseNumber'];
+	$maxCap = $courses['maxCapacity'];
+	$spotsLeft = $courses['spotsLeft'];
+	$courseName = $courses['courseName'];
+	$courseID = $courses['courseID'];
+	
+	$spotsFilled = $maxCap - $spotsLeft;
+
+	$sql1 = "SELECT * FROM SectionsTaught WHERE courseID = '$courseID'";
+	$query1 = mysql_query($sql1);
+	if (!$query1) {
+		exit('The query failed.'); 
+	} 
+	while ($rows = mysql_fetch_array($query1)) {
+
+		$sectionNumber = $rows['sectionNumber'];
+		$numReg = $rows['numRegistered'];
+		$secMax = $rows['sectionMax'];
+		
+		$fullNum = "0$schoolNum:$majorNum:$courseNum:$sectionNumber";
+	
+		//create new row per section and fill it with section info
+		echo "<tr><td align=\"center\"> $fullNum </td><td align=\"center\"> $sectionNumber </td><td align=\"center\"> $courseName </td><td align=\"center\"> 
+			$numReg </td><td align=\"center\"> $secMax </td><td align=\"center\"> $spotsFilled </td><td align=\"center\"> $maxCap </td></tr>";
+
+	
+	}	
+}
+
+
+?> </table> 
+
 
 <form action="index.php" method="post">
 <input type = "submit" value = "Logout">

@@ -34,7 +34,7 @@ foreach($_POST as $key => $value) {
 
 //echo message if forms aren't filled out
 if($addstudent == 0){
-	echo "Please fill out all forms.";
+	echo "Please fill out all forms.<br>";
 }
 
 //make sure there does not exist a student with the same netID
@@ -44,7 +44,7 @@ $samenetid = mysql_num_rows($query);
 //if there are any rows, there is already a student with the same netid
 if($samenetid > 0) {
 		$addstudent = 0;
-		echo "An account with that netID already exists.";
+		echo "An account with that netID already exists.<br>";
 }
 
 //add student into the database
@@ -59,10 +59,10 @@ if($addstudent == 1) {
 }
 
 
-$redirectionTime = 3;
+$redirectionTime = 4;
 $newPageUrl = "index.php";
 header( "Refresh: $redirectionTime; url=$newPageUrl" );
-echo "You will now be redirected to the home page, after $redirectionTime seconds.";
+echo "<br><br>You will now be redirected to the home page, after $redirectionTime seconds.";
 
 
 
