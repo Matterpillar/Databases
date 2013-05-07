@@ -39,12 +39,8 @@ if($addstudent == 0){
 
 //make sure there does not exist a student with the same netID
 $query = mysql_query("SELECT * FROM Student WHERE netid = '$mynetid'");
-$samenetid = 0;
-//while there are still rows in the query, increment samenetid
-while ($rows = mysql_fetch_array($query)) {
-	$samenetid++;
-	echo "NetID: " . $rows['netid'];
-}
+$samenetid = mysql_num_rows($query);
+
 //if there are any rows, there is already a student with the same netid
 if($samenetid > 0) {
 		$addstudent = 0;
