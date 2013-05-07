@@ -1,3 +1,5 @@
+<html>
+<title>Requesting Special Permission for a Section </title>
 <?php
 
 $host="localhost:3306"; // Host name
@@ -33,14 +35,14 @@ while ($courses = mysql_fetch_array($query)) {
 
 echo "<b><u>Special Permission Request - Student<br><br></b></u>";
 echo "<u>Sections Taught For $coursename</u>";
-echo "<br>All sections offered will show below if there are 10 or
-less spots available in the class<br>";
+echo " All sections offered with 10 or less spots available will display below (eligible for special permission)<br>";
 $sql = "SELECT schoolNum, majorNum, courseNumber, courseName, courseID, spotsLeft FROM Course 
 WHERE courseID = '$courseid'";
 $query = mysql_query($sql);
 if (!$query) {
 exit('The query failed.5'); 
 } 
+
 while ($courses = mysql_fetch_array($query)) {
 	$schoolnum = $courses['schoolNum'];
 	$majornum = $courses['majorNum'];
@@ -48,53 +50,65 @@ while ($courses = mysql_fetch_array($query)) {
 	$coursename = $courses['courseName'];
 	$courseid = $courses['courseID'];
 	$spotsleft = $courses['spotsLeft'];
-	//only will show courses with 10 or less spots remaining
-	if($spotsleft <= 10 AND $spotsleft > 0) {
-	$sql1 = "SELECT sectionNumber FROM SectionsTaught WHERE courseID = '$courseid'";
+	
+	$sql1 = "SELECT sectionNumber, maxCapacity, numRegistered FROM SectionsTaught WHERE courseID = '$courseid'";
 	$query1 = mysql_query($sql1);
 	if (!$query1) {
 	exit('The query failed.'); 
 	} 
 	while ($courses1 = mysql_fetch_array($query1)) {
 		$sectionNumber = $courses1['sectionNumber'];
-		echo "0$schoolnum:$majornum:$coursenum:$sectionNumber - $coursename<br>";
-	}
+		$maxcap = $courses1['maxCapacity'];
+		$numreg = $courses1['numRegistered'];
+		$space = $maxcap - $numreg;
+		if($space <= 10 AND $space > 0) {
+		echo "0$schoolnum:$majornum:$coursenum:$sectionNumber - $coursename Spots left: $space<br>";
+		}
+
 	}
 }
-echo "Section: ($spotsleft spot(s) left)<br>";
+echo "Section: <br>";
 $_SESSION['courseID'] = $courseid;
 $temp = $_SESSION['courseID'];
 
-if($spotsleft <= 10 AND $spotsleft > 0) {
 
-$sql = "SELECT SectionsTaught.sectionNumber, Course.spotsLeft 
-FROM SectionsTaught, Course 
-WHERE SectionsTaught.courseID = '$temp' AND Course.courseID = SectionsTaught.courseID 
-AND Course.spotsLeft <= '10' AND Course.spotsLeft > '0'";
+
+
+$sql = "SELECT schoolNum, majorNum, courseNumber, courseName, courseID, spotsLeft FROM Course 
+WHERE courseID = '$courseid'";
 $query = mysql_query($sql);
 if (!$query) {
-exit('The query failed.6'); 
+exit('The query failed.5'); 
 } 
 ?>
-<form action="insertSectionRequesting2.php" method="post">
-<select name='secreq'>";
+<form action="insertSectionRequesting2.php" method = "post">
+<select name = "secreq">;
 <?php
 while ($courses = mysql_fetch_array($query)) {
-	$sectionnumber = $courses['sectionNumber'];
-	echo "<option value='$sectionnumber'>" . $courses['sectionNumber'] . "</option>";
+	$schoolnum = $courses['schoolNum'];
+	$majornum = $courses['majorNum'];
+	$coursenum = $courses['courseNumber'];
+	$coursename = $courses['courseName'];
+	$courseid = $courses['courseID'];
+	$spotsleft = $courses['spotsLeft'];
+	
+	$sql1 = "SELECT sectionNumber, maxCapacity, numRegistered FROM SectionsTaught WHERE courseID = '$courseid'";
+	$query1 = mysql_query($sql1);
+	if (!$query1) {
+	exit('The query failed.'); 
+	} 
+	while ($courses1 = mysql_fetch_array($query1)) {
+		$sectionnumber = $courses1['sectionNumber'];
+		$maxcap = $courses1['maxCapacity'];
+		$numreg = $courses1['numRegistered'];
+		$space = $maxcap - $numreg;
+		if($space <= 10 AND $space > 0) {
+		echo "<option value='$sectionnumber'>" . $courses1['sectionNumber'] . "</option>";
+		}
+	}
 }
 echo "</select>";
 ?>
 <br><input type = "submit" value = "Request Section">
-</form>	
-<?php	
-}
+</form>
 
-$redirectionTime = 10;
-$newPageUrl = "studentHome.php";
-header( "Refresh: $redirectionTime; url=$newPageUrl" );
-echo "You will now be redirected to the Student page, after $redirectionTime seconds.";
-
-
-
-?>
